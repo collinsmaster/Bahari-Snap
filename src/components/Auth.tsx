@@ -38,7 +38,7 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
         return false;
       }
       if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
-        toast.error('Password must be at least 8 characters with one letter and one number');
+        toast.error('Password must be at least 8 characters and include both letters and numbers');
         return false;
       }
     }
@@ -83,6 +83,10 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
       
       const res = await api.post(endpoint, body);
       
+      if (res.warning) {
+        toast.warning(res.warning);
+      }
+
       if (mode === 'register' || (mode === 'login' && !res.user.isVerified)) {
         setTempToken(res.token);
         setTempUser(res.user);
@@ -136,7 +140,12 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to resend OTP');
-      toast.success('New OTP sent to your email.');
+      
+      if (data.warning) {
+        toast.warning(data.warning);
+      } else {
+        toast.success('New OTP sent to your email.');
+      }
     } catch (error: any) {
       toast.error(error.message);
     } finally {

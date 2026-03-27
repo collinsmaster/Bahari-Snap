@@ -42,7 +42,7 @@ async function startServer() {
   // Validation helpers
   const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validateUsername = (username: string) => /^[a-zA-Z0-9_]{3,20}$/.test(username);
-  const validatePassword = (password: string) => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
+  const validatePassword = (password: string) => /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
 
   // Helper to send OTP via EmailJS
   const sendOTP = async (email: string, otp: string) => {
@@ -52,7 +52,7 @@ async function startServer() {
     const privateKey = process.env.EMAILJS_PRIVATE_KEY;
 
     if (!serviceId || !templateId || !publicKey || !privateKey) {
-      console.error("EmailJS environment variables are not set");
+      console.error("EmailJS environment variables are not set. Please check EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY, and EMAILJS_PRIVATE_KEY.");
       return false;
     }
 
@@ -68,9 +68,16 @@ async function startServer() {
           template_params: { to_email: email, otp: otp },
         }),
       });
-      return response.ok;
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`EmailJS API Error (${response.status}):`, errorText);
+        return false;
+      }
+      
+      return true;
     } catch (error) {
-      console.error("Failed to send OTP:", error);
+      console.error("Failed to send OTP via EmailJS:", error);
       return false;
     }
   };
@@ -121,12 +128,17 @@ async function startServer() {
       });
 
       const sent = await sendOTP(email, otp);
+      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
+      
       if (!sent) {
-        // Still return success but warn about email failure
-        console.warn("OTP email failed to send to", email);
+        return res.json({ 
+          token, 
+          user, 
+          warning: "Account created, but we couldn't send the verification email. Please try resending it from the verification screen.",
+          message: "Account created (Email failed)"
+        });
       }
 
-      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
       res.json({ token, user, message: "Verification OTP sent to your email" });
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -170,7 +182,12 @@ async function startServer() {
       });
 
       const sent = await sendOTP(user.email, otp);
-      if (!sent) return res.status(500).json({ error: "Failed to send OTP email" });
+      if (!sent) {
+        return res.json({ 
+          warning: "We couldn't send the new OTP. Please check your EmailJS configuration or try again later.",
+          message: "Resend failed"
+        });
+      }
 
       res.json({ message: "New OTP sent to your email" });
     } catch (error: any) {
