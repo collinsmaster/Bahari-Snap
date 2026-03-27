@@ -106,26 +106,48 @@ async function startServer() {
     if (!validatePassword(password)) return res.status(400).json({ error: "Password must be at least 8 characters, with one letter and one number" });
 
     try {
-      const existingUser = await prisma.user.findFirst({
-        where: { OR: [{ email }, { username }] }
-      });
-      if (existingUser) return res.status(400).json({ error: "Email or username already taken" });
+      const existingEmail = await prisma.user.findUnique({ where: { email } });
+      const existingUsername = await prisma.user.findUnique({ where: { username } });
+
+      if (existingEmail && existingEmail.isVerified) {
+        return res.status(400).json({ error: "Email already taken" });
+      }
+      
+      if (existingUsername && (!existingEmail || existingUsername.id !== existingEmail.id)) {
+        return res.status(400).json({ error: "Username already taken" });
+      }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-      const user = await prisma.user.create({
-        data: {
-          email,
-          password: hashedPassword,
-          username,
-          displayName,
-          otp,
-          otpExpires,
-          isVerified: false,
-        },
-      });
+      let user;
+      if (existingEmail && !existingEmail.isVerified) {
+        // Update existing unverified user
+        user = await prisma.user.update({
+          where: { id: existingEmail.id },
+          data: {
+            password: hashedPassword,
+            username,
+            displayName,
+            otp,
+            otpExpires,
+          }
+        });
+      } else {
+        // Create new user
+        user = await prisma.user.create({
+          data: {
+            email,
+            password: hashedPassword,
+            username,
+            displayName,
+            otp,
+            otpExpires,
+            isVerified: false,
+          },
+        });
+      }
 
       const sent = await sendOTP(email, otp);
       const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
