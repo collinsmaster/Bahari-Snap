@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { auth, onAuthStateChanged, db, doc, getDoc, setDoc, serverTimestamp } from './lib/firebase';
+import { api } from './lib/api';
 import { UserProfile } from './types';
 import Auth from './components/Auth';
 import Navbar from './components/Navbar';
@@ -10,42 +10,41 @@ import Upload from './components/Upload';
 import { Toaster } from 'sonner';
 
 export default function App() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'feed' | 'profile' | 'circles' | 'upload'>('feed');
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        const docRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          setProfile(docSnap.data() as UserProfile);
-        } else {
-          // Create initial profile
-          const newProfile: UserProfile = {
-            uid: user.uid,
-            username: user.email?.split('@')[0] || `user_${Math.floor(Math.random() * 1000)}`,
-            displayName: user.displayName || 'Anonymous',
-            photoURL: user.photoURL || '',
-            followersCount: 0,
-            followingCount: 0,
-            createdAt: serverTimestamp() as any,
-          };
-          await setDoc(docRef, newProfile);
-          setProfile(newProfile);
+    const fetchUser = async () => {
+      if (token) {
+        try {
+          const userData = await api.get('/users/me', token);
+          setUser(userData);
+        } catch (error) {
+          console.error("Session expired or invalid token", error);
+          localStorage.removeItem('token');
+          setToken(null);
+          setUser(null);
         }
-      } else {
-        setProfile(null);
       }
       setLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
-  }, []);
+    fetchUser();
+  }, [token]);
+
+  const handleAuthSuccess = (newToken: string, userData: UserProfile) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+    setUser(userData);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    setUser(null);
+  };
 
   if (loading) {
     return (
@@ -58,7 +57,7 @@ export default function App() {
   if (!user) {
     return (
       <>
-        <Auth />
+        <Auth onAuthSuccess={handleAuthSuccess} />
         <Toaster position="top-center" theme="dark" />
       </>
     );
@@ -66,17 +65,18 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-ocean-deep text-ocean-foam font-sans">
-      <Navbar currentView={view} setView={setView} profile={profile} />
+      <Navbar currentView={view} setView={setView} profile={user} onLogout={handleLogout} />
       
       <main className="max-w-4xl mx-auto pt-16 pb-20">
-        {view === 'feed' && <Feed />}
-        {view === 'circles' && <Circles />}
-        {view === 'upload' && <Upload onComplete={() => setView('feed')} />}
-        {view === 'profile' && <Profile profile={profile} />}
+        {view === 'feed' && <Feed token={token!} />}
+        {view === 'circles' && <Circles token={token!} />}
+        {view === 'upload' && <Upload token={token!} onComplete={() => setView('feed')} />}
+        {view === 'profile' && <Profile profile={user} token={token!} />}
       </main>
 
       <Toaster position="top-center" theme="dark" />
     </div>
   );
 }
+
 

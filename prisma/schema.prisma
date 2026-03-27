@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String     @id @default(uuid())
+  email          String     @unique
+  password       String?
+  username       String     @unique
+  displayName    String
+  isVerified     Boolean    @default(false)
+  otp            String?
+  otpExpires     DateTime?
+  photoURL       String?
+  bio            String?
+  followersCount Int        @default(0)
+  followingCount Int        @default(0)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  comments       Comment[]
+  posts          Post[]
+  reactions      Reaction[]
+}
+
+model Post {
+  id            String     @id @default(uuid())
+  authorId      String
+  mediaUrl      String
+  mediaType     String
+  caption       String?
+  likesCount    Int        @default(0)
+  commentsCount Int        @default(0)
+  circleId      String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  comments      Comment[]
+  author        User       @relation(fields: [authorId], references: [id])
+  circle        Circle?    @relation(fields: [circleId], references: [id])
+  reactions     Reaction[]
+}
+
+model Circle {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  description  String?
+  membersCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  posts        Post[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  authorId  String
+  text      String
+  createdAt DateTime @default(now())
+  author    User     @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+}
+
+model Reaction {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  type      String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([postId, userId, type])
+}

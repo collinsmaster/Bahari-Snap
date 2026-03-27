@@ -12,7 +12,19 @@ services:
     env:
       - key: NODE_ENV
         value: production
+      - key: DATABASE_URL
+        type: secret
+      - key: JWT_SECRET
+        type: secret
       - key: APP_URL
+        type: secret
+      - key: EMAILJS_SERVICE_ID
+        type: secret
+      - key: EMAILJS_TEMPLATE_ID
+        type: secret
+      - key: EMAILJS_PUBLIC_KEY
+        type: secret
+      - key: EMAILJS_PRIVATE_KEY
         type: secret
       - key: FIREBASE_API_KEY
         type: secret

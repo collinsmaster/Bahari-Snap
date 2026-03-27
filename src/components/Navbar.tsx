@@ -8,17 +8,13 @@ interface NavbarProps {
   currentView: 'feed' | 'profile' | 'circles' | 'upload';
   setView: (view: 'feed' | 'profile' | 'circles' | 'upload') => void;
   profile: UserProfile | null;
+  onLogout: () => void;
 }
 
-export default function Navbar({ currentView, setView, profile }: NavbarProps) {
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast.success('Signed out successfully.');
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to sign out.');
-    }
+export default function Navbar({ currentView, setView, profile, onLogout }: NavbarProps) {
+  const handleLogout = () => {
+    onLogout();
+    toast.success('Signed out successfully.');
   };
 
   const navItems = [

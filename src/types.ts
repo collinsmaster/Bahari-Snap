@@ -1,28 +1,33 @@
-import { Timestamp } from 'firebase/firestore';
-
 export interface UserProfile {
-  uid: string;
+  id: string;
+  email: string;
   username: string;
   displayName: string;
+  isVerified: boolean;
   photoURL?: string;
   bio?: string;
   followersCount: number;
   followingCount: number;
-  createdAt: Timestamp;
+  createdAt: string;
 }
 
 export interface Post {
   id: string;
   authorId: string;
-  authorName: string;
-  authorPhoto?: string;
+  author: {
+    id: string;
+    username: string;
+    displayName: string;
+    photoURL?: string;
+  };
   mediaUrl: string;
   mediaType: 'image' | 'video';
   caption?: string;
   likesCount: number;
   commentsCount: number;
   circleId?: string;
-  createdAt: Timestamp;
+  createdAt: string;
+  reactions?: Reaction[];
 }
 
 export interface Circle {
@@ -30,23 +35,25 @@ export interface Circle {
   name: string;
   description?: string;
   membersCount: number;
-  createdAt: Timestamp;
+  createdAt: string;
 }
 
 export interface Comment {
   id: string;
   postId: string;
   authorId: string;
-  authorName: string;
-  authorPhoto?: string;
+  author: {
+    username: string;
+    photoURL?: string;
+  };
   text: string;
-  createdAt: Timestamp;
+  createdAt: string;
 }
 
 export interface Reaction {
   id: string;
   postId: string;
   userId: string;
-  type: '🔥' | '😂' | '💡' | '❤️';
-  createdAt: Timestamp;
+  type: string;
+  createdAt: string;
 }

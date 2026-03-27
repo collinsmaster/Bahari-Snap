@@ -1,35 +1,32 @@
 import { useState, useEffect } from 'react';
-import { db, collection, query, orderBy, limit, onSnapshot, auth } from '../lib/firebase';
+import { api } from '../lib/api';
 import { Post as PostType } from '../types';
 import PostItem from './PostItem';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Waves } from 'lucide-react';
 
-export default function Feed() {
+interface FeedProps {
+  token: string;
+}
+
+export default function Feed({ token }: FeedProps) {
   const [posts, setPosts] = useState<PostType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(
-      collection(db, 'posts'),
-      orderBy('createdAt', 'desc'),
-      limit(20)
-    );
+    const fetchPosts = async () => {
+      try {
+        const postsData = await api.get('/posts', token);
+        setPosts(postsData);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const postsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as PostType[];
-      setPosts(postsData);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching posts:", error);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+    fetchPosts();
+  }, [token]);
 
   if (loading) {
     return (
@@ -61,7 +58,7 @@ export default function Feed() {
       <AnimatePresence>
         {posts.map((post) => (
           <div key={post.id} className="snap-item">
-            <PostItem post={post} />
+            <PostItem post={post} token={token} />
           </div>
         ))}
       </AnimatePresence>
