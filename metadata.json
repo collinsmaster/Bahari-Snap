@@ -1,0 +1,9 @@
+{
+  "name": "Bahari Snap",
+  "description": "A fluid, immersive social media platform inspired by the ocean. Experience the flow of content with vertical snaps, wave interactions, and community circles.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
