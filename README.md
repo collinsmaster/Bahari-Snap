@@ -2,7 +2,7 @@
 
 **Bahari Snap** is a fluid, immersive social media platform inspired by the ocean. Experience the "flow" of content with vertical snaps, wave interactions, and community circles.
 
-[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/YOUR_GITHUB_USERNAME/bahari-snap&branch=main&name=bahari-snap&env[GEMINI_API_KEY]=&env[APP_URL]=&env[FIREBASE_API_KEY]=&env[FIREBASE_AUTH_DOMAIN]=&env[FIREBASE_PROJECT_ID]=&env[FIREBASE_STORAGE_BUCKET]=&env[FIREBASE_MESSAGING_SENDER_ID]=&env[FIREBASE_APP_ID]=&env[FIREBASE_FIRESTORE_DATABASE_ID]=)
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/YOUR_GITHUB_USERNAME/bahari-snap&branch=main&name=bahari-snap&env[APP_URL]=&env[FIREBASE_API_KEY]=&env[FIREBASE_AUTH_DOMAIN]=&env[FIREBASE_PROJECT_ID]=&env[FIREBASE_STORAGE_BUCKET]=&env[FIREBASE_MESSAGING_SENDER_ID]=&env[FIREBASE_APP_ID]=&env[FIREBASE_FIRESTORE_DATABASE_ID]=)
 
 ## 🚀 Features
 
@@ -51,7 +51,6 @@ npm run dev
 1. **Push to GitHub:** Create a new repository and push your code.
 2. **Click the Deploy Button:** Use the button above or manually connect your repo in the Koyeb dashboard.
 3. **Configure Environment Variables:**
-   - `GEMINI_API_KEY`: Your Google AI Studio API key.
    - `APP_URL`: Your Koyeb app URL (e.g., `https://bahari-snap-user.koyeb.app`).
    - `FIREBASE_*`: Your Firebase project credentials.
 

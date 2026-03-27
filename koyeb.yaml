@@ -12,8 +12,6 @@ services:
     env:
       - key: NODE_ENV
         value: production
-      - key: GEMINI_API_KEY
-        type: secret
       - key: APP_URL
         type: secret
       - key: FIREBASE_API_KEY
