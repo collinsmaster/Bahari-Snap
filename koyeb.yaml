@@ -1,0 +1,32 @@
+name: bahari-snap
+services:
+  - name: bahari-snap
+    type: web
+    build:
+      command: npm run build
+    run:
+      command: npm start
+    ports:
+      - port: 3000
+        protocol: http
+    env:
+      - key: NODE_ENV
+        value: production
+      - key: GEMINI_API_KEY
+        type: secret
+      - key: APP_URL
+        type: secret
+      - key: FIREBASE_API_KEY
+        type: secret
+      - key: FIREBASE_AUTH_DOMAIN
+        type: secret
+      - key: FIREBASE_PROJECT_ID
+        type: secret
+      - key: FIREBASE_STORAGE_BUCKET
+        type: secret
+      - key: FIREBASE_MESSAGING_SENDER_ID
+        type: secret
+      - key: FIREBASE_APP_ID
+        type: secret
+      - key: FIREBASE_FIRESTORE_DATABASE_ID
+        type: secret

@@ -1,20 +1,59 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🌊 Bahari Snap
 
-# Run and deploy your AI Studio app
+**Bahari Snap** is a fluid, immersive social media platform inspired by the ocean. Experience the "flow" of content with vertical snaps, wave interactions, and community circles.
 
-This contains everything you need to run your app locally.
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/YOUR_GITHUB_USERNAME/bahari-snap&branch=main&name=bahari-snap&env[GEMINI_API_KEY]=&env[APP_URL]=&env[FIREBASE_API_KEY]=&env[FIREBASE_AUTH_DOMAIN]=&env[FIREBASE_PROJECT_ID]=&env[FIREBASE_STORAGE_BUCKET]=&env[FIREBASE_MESSAGING_SENDER_ID]=&env[FIREBASE_APP_ID]=&env[FIREBASE_FIRESTORE_DATABASE_ID]=)
 
-View your app in AI Studio: https://ai.studio/apps/ffcd1bd8-599b-4339-89f3-1de9818879f3
+## 🚀 Features
 
-## Run Locally
+- **Vertical Snap Feed:** Immersive full-screen video and image scrolling.
+- **Wave Interactions:** React with 🔥, 😂, 💡, or ❤️ and leave "Echoes" (comments).
+- **Circles:** Join community groups like *Music Waves*, *Tech Tide*, and *Nairobi Trends*.
+- **Real-time Updates:** Powered by Firebase for instant interactions.
+- **Ocean Aesthetic:** Deep blue themes with neon accents and glassmorphism.
 
-**Prerequisites:**  Node.js
+## 🛠 Tech Stack
 
+- **Frontend:** React 19, Vite, Tailwind CSS 4, Framer Motion.
+- **Backend:** Node.js (Express) serving the SPA.
+- **Database:** Firebase Firestore & Storage.
+- **Auth:** Firebase Google Authentication.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 📦 Setup Instructions
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/YOUR_GITHUB_USERNAME/bahari-snap.git
+cd bahari-snap
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Environment Variables
+Create a `.env` file based on `.env.example` and add your Firebase credentials:
+```env
+GEMINI_API_KEY=your_key
+APP_URL=http://localhost:3000
+VITE_FIREBASE_API_KEY=your_key
+...
+```
+
+### 4. Run Development Server
+```bash
+npm run dev
+```
+
+## 🚢 Deployment to Koyeb
+
+1. **Push to GitHub:** Create a new repository and push your code.
+2. **Click the Deploy Button:** Use the button above or manually connect your repo in the Koyeb dashboard.
+3. **Configure Environment Variables:**
+   - `GEMINI_API_KEY`: Your Google AI Studio API key.
+   - `APP_URL`: Your Koyeb app URL (e.g., `https://bahari-snap-user.koyeb.app`).
+   - `FIREBASE_*`: Your Firebase project credentials.
+
+## 📄 License
+Apache-2.0
